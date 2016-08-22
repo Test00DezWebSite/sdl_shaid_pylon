@@ -79,7 +79,7 @@ module.exports = function(server) {
       if(err) {
         res.reply.setInternalServerError(next);
       } else {
-        res.reply.setData(response);
+        res.reply.fromObject(response);
         next();
       }
     });
