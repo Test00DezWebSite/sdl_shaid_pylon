@@ -1,0 +1,12 @@
+{
+  "log" : {                         // Configure the local log module.
+    "consoleLogLevel": "trace",     // Configure the bunyan log level: https://github.com/trentm/node-bunyan#levels
+    "requests": true                // Enable trace logging of all requests the server receives.
+  },
+
+  "server" : {                      // Settings for the Node server.
+    "domainName": "localhost",      // Domain name used to reach the server.  (e.g. my.website.com)
+    "port": 3000,                   // Port the server will be listening on.
+    "protocol": "http"              // Protocol used to reach the server. (e.g. http or https)
+  }
+}

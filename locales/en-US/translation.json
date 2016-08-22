@@ -1,0 +1,17 @@
+{
+  "server": {
+    "400": {
+      "authenticationRequired": "Authentication is required to make that request.  You must provide a valid access token.",
+      "badRequest": "Could not process the request due to a client error.",
+      "expiredAccessToken": "Request unauthorized because the access token provided has expired.",
+      "forbidden": "The request may be authenticated, but you do not have permission to access the target resource.",
+      "invalidParameter": "The value for parameter \"{{parameter}}\" is invalid, a valid {{type}} was expected.",
+      "missingRequiredParameter": "The parameter \"{{parameter}}\" is missing or invalid.",
+      "notFound": "Not Found, the target resource does not exist or could not be located.",
+      "unauthorized": "Unauthorized, the request lacks valid authentication credentials for the target resource."
+    },
+    "500": {
+      "generic": "Internal server error."
+    }
+  }
+}
