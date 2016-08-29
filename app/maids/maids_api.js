@@ -111,7 +111,7 @@ module.exports = function(server) {
     }
 
     onSenecaReady() {
-      seneca.client({ type: 'http', pin: 'service:maids' });
+      seneca.client({ host: process.env.MAIDS_HOST || 'localhost', type: 'http', pin: 'service:maids' });
     }
   }
 
