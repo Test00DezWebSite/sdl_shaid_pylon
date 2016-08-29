@@ -68,7 +68,7 @@
     "i18next-node-fs-backend": "^0.1.2",
     "i18next-sprintf-postprocessor": "^0.2.2",
     "lodash": "^4.13.1",
-    "riposte": "git+ssh://git@github.com:livio/riposte.git",
+    "riposte": "0.0.5",
     "seneca": "^2.1.0"
   },
   "devDependencies": {
