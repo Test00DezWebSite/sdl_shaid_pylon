@@ -33,7 +33,7 @@ module.exports = function(server) {
     constructor() {
 
     }
-
+    
   }
 
   return new Health();

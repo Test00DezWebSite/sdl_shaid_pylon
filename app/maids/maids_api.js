@@ -5,16 +5,15 @@ module.exports = function(server) {
     express = require('express'),
     log = server.log,
     request = require('request'),
-    RichError = server.RichError,
-    seneca = server.seneca,
-    _ = require('lodash');
+    seneca = server.seneca;
 
   const METHODS = {
     register: "register"
   };
 
   const MODELS = {
-    appids: "appids"
+    appids: "appids",
+    health: "health"
   };
 
   const SMARTDEVICELINK_BASE_URL = config.get('smartdevicelink.baseUrl'),
@@ -22,13 +21,14 @@ module.exports = function(server) {
   
   const API_TOKEN_MAIDS = process.env.API_TOKEN_MAIDS || config.get('apiTokens.maids');
 
+
   /* ************************************************** *
    * ******************** API Routes and Permissions
    * ************************************************** */
 
   var api = express.Router();
 
-
+  api.route('/health').get(setModel('health'), sendCmd);
   api.route('/:model').post(validateAccessToken, sendCmd);
   api.route('/:model/:method').all(validateAccessToken, sendCmd);
 
@@ -38,6 +38,13 @@ module.exports = function(server) {
   /* ************************************************** *
    * ******************** Route Methods
    * ************************************************** */
+
+  function setModel(model) {
+    return function(req, res, next) {
+      req.params.model = model;
+      next();
+    }
+  }
 
   function validateAccessToken(req, res, next) {
     let access_token = req.headers['authorization'] || req.query.access_token;
@@ -133,6 +140,11 @@ module.exports = function(server) {
     }
   };
 
+  
+  /* ************************************************** *
+   * ******************** MAIDS Class
+   * ************************************************** */
+
   class Maids {
     constructor() {
 
@@ -142,7 +154,6 @@ module.exports = function(server) {
       seneca.client({ host: process.env.MAIDS_HOST || 'localhost', type: 'http', pin: 'service:maids' });
     }
   }
-
 
   return new Maids();
 };
