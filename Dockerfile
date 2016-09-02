@@ -12,4 +12,4 @@ COPY . /usr/src/app/
 
 EXPOSE 3000 10101
 
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
