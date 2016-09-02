@@ -26,7 +26,7 @@ module.exports = function(server) {
    * Health check for pylon.
    */
   function sendHealth(req, res, next) {
-    res.send('I am healthy!')
+    res.sendStatus(200);
   }
 
   class Health {
