@@ -50,6 +50,7 @@ module.exports = function(server) {
   function sendCmd(req, res, next) {
     let pattern = {
       access_token: "SHAID_PYLON",
+      id: res.reply.id,
       method: getMethod(req.method, req.params),
       model: MODELS[req.params.model],
       service: "maids",
@@ -79,7 +80,10 @@ module.exports = function(server) {
       if(err) {
         res.reply.setInternalServerError(next);
       } else {
+        console.log(response);
         res.reply.fromObject(response);
+        console.log(res.reply.status);
+        console.log(res.reply.errors);
         next();
       }
     });
