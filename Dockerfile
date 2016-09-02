@@ -1,7 +1,5 @@
 FROM node:6.4.0
 
-ENV NODE_ENV=development
-
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
