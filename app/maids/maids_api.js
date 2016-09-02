@@ -19,6 +19,8 @@ module.exports = function(server) {
 
   const SMARTDEVICELINK_BASE_URL = config.get('smartdevicelink.baseUrl'),
     SMARTDEVICELINK_PROFILE_URL = SMARTDEVICELINK_BASE_URL + config.get('smartdevicelink.profileUrl');
+  
+  const API_TOKEN_MAIDS = process.env.API_TOKEN_MAIDS || config.get('apiTokens.maids');
 
   /* ************************************************** *
    * ******************** API Routes and Permissions
@@ -74,7 +76,7 @@ module.exports = function(server) {
 
   function sendCmd(req, res, next) {
     let pattern = {
-      access_token: "SHAID_PYLON",
+      access_token: API_TOKEN_MAIDS,
       id: res.reply.id,
       method: getMethod(req.method, req.params),
       model: MODELS[req.params.model],

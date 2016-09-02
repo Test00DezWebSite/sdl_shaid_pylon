@@ -1,4 +1,8 @@
 {
+  "apiTokens": {
+    "maids": "development-only-token"
+  },
+
   "crave" : {                       // Crave is a module used to find and require files dynamically.  https://github.com/ssmereka/crave
     "cache": {                      // Configure caching of the list of files to require.
       "enable": false               // Disable caching of the list of files to load.  In production this should be enabled.
