@@ -4,6 +4,7 @@ module.exports = function(server) {
     config = server.config,
     express = require('express'),
     log = server.log,
+    request = require('request'),
     RichError = server.RichError,
     seneca = server.seneca,
     _ = require('lodash');
@@ -16,6 +17,8 @@ module.exports = function(server) {
     appids: "appids"
   };
 
+  const SMARTDEVICELINK_BASE_URL = config.get('smartdevicelink.baseUrl'),
+    SMARTDEVICELINK_PROFILE_URL = SMARTDEVICELINK_BASE_URL + config.get('smartdevicelink.profileUrl');
 
   /* ************************************************** *
    * ******************** API Routes and Permissions
@@ -40,10 +43,32 @@ module.exports = function(server) {
     if( ! access_token) {
       res.reply.setUnauthorized(next);
     } else {
-      req.user = {
-        id: "1"
+      let options = {
+        "headers": {
+          "Authorization": "token "+access_token
+        },
+        "method": "GET",
+        "url": SMARTDEVICELINK_PROFILE_URL
       };
-      next();
+      request(options, function(err, response, body) {
+        if(err) {
+          log.error("[%s] Error using %s with access token %s.\nError: %s", res.reply.id, options.url, access_token, err);
+          res.reply.addErrors(err, next);
+        } else if( ! body){
+          log.error("[%s] Error using %s with access token %s: No body returned", res.reply.id, options.url, access_token);
+          res.reply.addErrors(new Error("Error in request to "+options.url), next);
+        } else {
+          body = JSON.parse(body);
+          log.trace("[%s] Response from %s using token %s\nBody: %s", res.reply.id, options.url, access_token, JSON.stringify(body, undefined, 2));
+          if( ! body.id) {
+            res.reply.setUnauthorized(next);
+          } else {
+            body.id = "" + body.id;
+            req.user = body;
+            next();
+          }
+        }
+      });
     }
   }
 
@@ -80,10 +105,7 @@ module.exports = function(server) {
       if(err) {
         res.reply.setInternalServerError(next);
       } else {
-        console.log(response);
         res.reply.fromObject(response);
-        console.log(res.reply.status);
-        console.log(res.reply.errors);
         next();
       }
     });

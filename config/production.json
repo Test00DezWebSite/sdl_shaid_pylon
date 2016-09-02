@@ -36,5 +36,9 @@
     "port": 3000,                   // Port the server will be listening on.
     "protocol": "http"              // Protocol used to reach the server. (e.g. http or https)
     //"url": "http://localhost:3000 // Full URL used to reach the server.  If undefined, it will be created using the domainName, protocol, and port.
+  },
+
+  "smartdevicelink": {
+    "baseUrl": "https://smartdevicelink.com"
   }
 }
