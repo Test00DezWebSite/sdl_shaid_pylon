@@ -1,0 +1,20 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker info
+    - docker build --rm=false -t smartdevicelink/shaid-pylon:$CIRCLE_TAG .
+    
+test:
+  override:
+    - echo "skipping tests"
+
+deployment:
+  hub:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    owner: smartdevicelink
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push smartdevicelink/shaid-pylon
