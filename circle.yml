@@ -10,7 +10,7 @@ dependencies:
 test:
   override:
     - docker run -d --name pylon smartdevicelink/shaid-pylon:$CIRCLE_TAG
-    - sudo lxc-attach -n "$(docker inspect --format "{{.Id}}" pylon)" -- bash -c npm test
+    - sudo lxc-attach -n "$(docker inspect --format "{{.Id}}" pylon)" -- bash -c "npm test"
 
 deployment:
   hub:
