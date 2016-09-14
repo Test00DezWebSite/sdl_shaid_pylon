@@ -7,6 +7,11 @@ dependencies:
     - docker info
     - docker build --rm=false -t smartdevicelink/shaid-pylon:$CIRCLE_TAG .
 
+test:
+  override:
+    - docker run -d --name pylon smartdevicelink/shaid-pylon:$CIRCLE_TAG
+    - docker exec pylon npm test
+
 deployment:
   hub:
     tag: /v[0-9]+(\.[0-9]+)*/
