@@ -1,6 +1,6 @@
 {
   "name": "shaid-pylon",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "Livio",
   "bugs": {
     "url": "https://github.com/smartdevicelink/sdl_shaid_pylon.git"
@@ -42,13 +42,9 @@
     "url": "https://github.com/smartdevicelink/sdl_shaid_pylon.git"
   },
   "scripts": {
-    "build": "if [ \"${PWD##*/}\" == \"build\" ]; then cd ../ ; fi && echo $PWD && rsync -av --progress --update \"$PWD/node_modules\" \"$PWD/build\" && rsync -av --progress --update --exclude \"build\" --exclude \"node_modules\" --exclude \"*.yml\" --exclude \".*\" --exclude \"*.js\" --exclude \"*.md\" --exclude \"*.log\" \"$PWD/\" \"$PWD/build\" && babel ./ --ignore \"node_modules,build\" -d build",
-    "build:start": "npm run-script build && cd ./build && NODE_ENV=development node index.js",
     "start": "NODE_ENV=development node index.js",
-    "start:staging": "npm run-script build && cd ./build && NODE_ENV=staging node index.js",
-    "start:production": "npm run-script build && cd ./build && NODE_ENV=production node index.js",
-    "test": "npm run-script build && cd ./build && NODE_ENV=test mocha",
-    "test-travis": "npm run-script build && cd ./build && NODE_ENV=test-travis istanbul cover -x '**_test.js' -x '**/test.js' ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec"
+    "test": "NODE_ENV=test mocha",
+    "test-travis": "NODE_ENV=test-travis istanbul cover -x '**_test.js' -x '**/test.js' ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec"
   },
   "dependencies": {
     "async": "^2.0.0-rc.6",

@@ -253,17 +253,7 @@ class Server {
 
           app.use(middleware);
           app.use(webpackHotMiddleware(compiler));
-          app.get('/', function response(req, res) {
-            res.write(middleware.fileSystem.readFileSync(path.join(__dirname, 'client/dist/index.html')));
-            res.end();
-          });
-
-        } else {
-          app.use(express.static(path.join(__dirname, '/client/dist'), config.get('express.static')));
-          app.get('/', function response(req, res) {
-            res.sendFile(path.join(__dirname, 'client/dist/index.html'));
-          });
-        }
+        } 
 
         // Log all requests when trace level logging is enabled.
         /*if(config.has('log.logAllRequests') && config.get('log.logAllRequests') === true) {
