@@ -1,6 +1,6 @@
 {
   "name": "shaid-pylon",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Livio",
   "bugs": {
     "url": "https://github.com/smartdevicelink/sdl_shaid_pylon.git"
@@ -64,7 +64,7 @@
     "i18next-node-fs-backend": "^0.1.2",
     "i18next-sprintf-postprocessor": "^0.2.2",
     "lodash": "^4.13.1",
-    "riposte": "0.0.8",
+    "riposte": "0.0.9",
     "seneca": "^2.1.0"
   },
   "devDependencies": {

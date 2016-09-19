@@ -8,6 +8,7 @@ module.exports = function(server) {
     seneca = server.seneca;
 
   const METHODS = {
+    create: "create",
     register: "register"
   };
 
@@ -28,9 +29,9 @@ module.exports = function(server) {
 
   var api = express.Router();
 
-  api.route('/health').get(setModel('health'), sendCmd);
-  api.route('/:model').post(validateAccessToken, sendCmd);
-  api.route('/:model/:method').all(validateAccessToken, sendCmd);
+  api.route('/health').get(setParams({ model: 'health', method: 'find' }), validateRequest,  sendCmd);
+  api.route('/:model').post(setParams({ method: 'create'}), validateRequest, validateAccessToken, sendCmd);
+  api.route('/:model/:method').all(validateRequest, validateAccessToken, sendCmd);
 
   app.use('/maids/:version', api);
 
@@ -39,10 +40,16 @@ module.exports = function(server) {
    * ******************** Route Methods
    * ************************************************** */
 
-  function setModel(model) {
-    return function(req, res, next) {
-      req.params.model = model;
-      next();
+  function setParams(obj) {
+    if(obj) {
+      return function (req, res, next) {
+        for(var key in obj) {
+          if(obj.hasOwnProperty(key)) {
+            req.params[key] = obj[key];
+          }
+        }
+        next();
+      }
     }
   }
 
@@ -81,11 +88,19 @@ module.exports = function(server) {
     }
   }
 
+  function validateRequest(req, res, next) {
+    if(MODELS[req.params.model] && METHODS[req.params.method]) {
+      next();
+    } else {
+      res.reply.setNotFound();
+    }
+  }
+
   function sendCmd(req, res, next) {
     let pattern = {
       access_token: API_TOKEN_MAIDS,
       id: res.reply.id,
-      method: getMethod(req.method, req.params),
+      method: METHODS[req.params.method],
       model: MODELS[req.params.model],
       service: "maids",
       user: req.user,
@@ -119,26 +134,6 @@ module.exports = function(server) {
       }
     });
   }
-
-  let getMethod = function (requestMethod, requestParams) {
-    if(METHODS[requestParams.method]) {
-      return METHODS[requestParams.method];
-    } else {
-      switch(requestMethod) {
-        case "PUT":
-          return "update";
-        case "POST":
-          return "create";
-        case "GET":
-          return "find";
-        case "DELETE":
-          return "delete";
-        default:
-          console.log("UNKNOWN METHOD: " + req.method);
-          return "";
-      }
-    }
-  };
 
   
   /* ************************************************** *
