@@ -1,5 +1,7 @@
 FROM mhart/alpine-node:6.6.0
 
+RUN apk add --update bash && rm -rf /var/cache/apk/*
+
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
