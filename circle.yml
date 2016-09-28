@@ -23,4 +23,4 @@ deployment:
       - git config --global user.name "$GIT_NAME"
       - curl -O https://raw.githubusercontent.com/livio/scripts/master/docker/compose-update.sh
       - chmod +x compose-update.sh
-      - compose-update $CIRCLE_TAG smartdevicelink sdl_shaid smartdevicelink/shaid-pylon docker-compose.yml "Bumped shaid-pylon version $CIRCLE_TAG"
+      - ./compose-update.sh $CIRCLE_TAG smartdevicelink sdl_shaid smartdevicelink/shaid-pylon docker-compose.yml "Bumped shaid-pylon version $CIRCLE_TAG"
