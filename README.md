@@ -1,8 +1,8 @@
 # PYLON
 API gateway for all [SHAID](https://smartdevicelink.com/en/docs/shaid/master/overview/) microservices.  
 
-[![Slack Status](http://sdlslack.herokuapp.com/badge.svg)](http://slack.smartdevicelink.org)
-<a href="https://travis-ci.org/smartdevicelink/sdl_shaid_pylon" target="_blank"><img src="https://travis-ci.org/smartdevicelink/sdl_shaid_pylon.svg"></a>
+[![Slack Status](http://sdlslack.herokuapp.com/badge.svg)](http://slack.smartdevicelink.com)
+[![CircleCI](https://circleci.com/gh/smartdevicelink/sdl_shaid_pylon.svg?style=shield)](https://circleci.com/gh/smartdevicelink/sdl_shaid_pylon)
 <a href="https://codecov.io/github/smartdevicelink/sdl_shaid_pylon?branch=master" target="_blank"><img src="https://codecov.io/github/smartdevicelink/sdl_shaid_pylon/coverage.svg?branch=master" /></a>
 [![Dependency Status](https://david-dm.org/smartdevicelink/sdl_shaid_pylon.svg)](https://david-dm.org/smartdevicelink/sdl_shaid_pylon)
 
