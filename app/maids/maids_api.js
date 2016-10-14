@@ -69,10 +69,10 @@ module.exports = function(server) {
       request(options, function(err, response, body) {
         if(err) {
           log.error("[%s] Error using %s with access token %s.\nError: %s", res.reply.id, options.url, access_token, err);
-          res.reply.addErrors(err, next);
+          res.reply.setErrors(err, next);
         } else if( ! body){
           log.error("[%s] Error using %s with access token %s: No body returned", res.reply.id, options.url, access_token);
-          res.reply.addErrors(new Error("Error in request to "+options.url), next);
+          res.reply.setErrors(new Error("Error in request to "+options.url), next);
         } else {
           body = JSON.parse(body);
           log.trace("[%s] Response from %s using token %s\nBody: %s", res.reply.id, options.url, access_token, JSON.stringify(body, undefined, 2));

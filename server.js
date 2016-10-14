@@ -11,6 +11,7 @@ const async = require('async'),
   fs = require('fs'),
   os = require('os'),
   path = require('path'),
+  Remie = require('remie'),
   util = require('util');
 
 // Path to the node.js application files. (e.g. api endpoints)
@@ -22,8 +23,7 @@ const applicationPath = path.resolve("./app"),
  * ******************** Local Modules
  * ************************************************** */
 
-const RichErrorLibrary = require(path.resolve('./libs/richError/')),
-  Log = require(path.resolve('./libs/log')),
+const Log = require(path.resolve('./libs/log')),
   ResponseHandler = require(path.resolve('./libs/response'));
 
 
@@ -197,7 +197,7 @@ class Server {
     riposte.set({
       'i18next': self.i18next,
       'log': self.log,
-      //'richError': self.RichError
+      'remie': self.remie
     });
 
     // Create an express application object.
@@ -316,9 +316,9 @@ class Server {
       });
 
       self.i18next = i18next;
-      self.RichError = RichErrorLibrary({ i18next: i18next });
+      self.remie = new Remie({ i18next: i18next });
     } else {
-      self.RichError = RichErrorLibrary();
+      self.remie = new Remie();
       cb();
     }
   }
