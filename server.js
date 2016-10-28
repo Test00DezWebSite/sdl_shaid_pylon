@@ -12,6 +12,7 @@ const async = require('async'),
   os = require('os'),
   path = require('path'),
   Remie = require('remie'),
+  Riposte = require('riposte'),
   util = require('util');
 
 // Path to the node.js application files. (e.g. api endpoints)
@@ -190,14 +191,13 @@ class Server {
     let compress = require('compression'),
       express = require('express'),
       bodyParser = require('body-parser'),
-      riposte = new (require('riposte')),
+      riposte = new Riposte(),
       session = require('express-session'),
       userAgent = require('express-useragent');
 
     riposte.set({
-      'i18next': self.i18next,
-      'log': self.log,
-      'remie': self.remie
+      log: self.log,
+      remie: self.remie
     });
 
     // Create an express application object.
@@ -316,9 +316,9 @@ class Server {
       });
 
       self.i18next = i18next;
-      self.remie = new Remie({ i18next: i18next });
+      self.remie = new Remie({ defaultSanitizeOptions: {error:{stack: false}}, i18next: i18next });
     } else {
-      self.remie = new Remie();
+      self.remie = new Remie({ defaultSanitizeOptions: {error:{stack: false}} });
       cb();
     }
   }

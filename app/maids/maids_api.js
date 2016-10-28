@@ -4,6 +4,7 @@ module.exports = function(server) {
     config = server.config,
     express = require('express'),
     log = server.log,
+    remie = server.remie,
     request = require('request'),
     seneca = server.seneca;
 
@@ -57,7 +58,7 @@ module.exports = function(server) {
     let access_token = req.headers['authorization'] || req.query.access_token;
 
     if( ! access_token) {
-      res.reply.setUnauthorized(next);
+      res.reply.sendErrorType(401, res, next);
     } else {
       let options = {
         "headers": {
@@ -69,15 +70,17 @@ module.exports = function(server) {
       request(options, function(err, response, body) {
         if(err) {
           log.error("[%s] Error using %s with access token %s.\nError: %s", res.reply.id, options.url, access_token, err);
-          res.reply.setErrors(err, next);
+          let err = remie.create(err, { internalMessage: "Using access token "+access_token, referenceData: options.url });
+          res.reply.addErrorsAndSend(err, res, cb);
         } else if( ! body){
           log.error("[%s] Error using %s with access token %s: No body returned", res.reply.id, options.url, access_token);
-          res.reply.setErrors(new Error("Error in request to "+options.url), next);
+          let err = remie.create("No body returned from "+options.url, { internalMessage: "Using access token "+access_token, referenceData: options.url });
+          res.reply.addErrorsAndSend(err, res, cb);
         } else {
           body = JSON.parse(body);
           log.trace("[%s] Response from %s using token %s\nBody: %s", res.reply.id, options.url, access_token, JSON.stringify(body, undefined, 2));
           if( ! body.id) {
-            res.reply.setUnauthorized(next);
+            res.reply.sendErrorType(401, res, next);
           } else {
             body.id = "" + body.id;
             req.user = body;
@@ -92,7 +95,7 @@ module.exports = function(server) {
     if(MODELS[req.params.model] && METHODS[req.params.method]) {
       next();
     } else {
-      res.reply.setNotFound();
+      res.reply.sendErrorType(404, res, next);
     }
   }
 
@@ -127,7 +130,7 @@ module.exports = function(server) {
     log.trace("ACT PATTERN: %s", JSON.stringify(pattern, undefined, 2));
     seneca.act(pattern, function(err, response) {
       if(err) {
-        res.reply.setInternalServerError(next);
+        res.reply.sendErrorType(500, res, next);
       } else {
         res.reply.fromObject(response);
         next();
