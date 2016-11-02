@@ -1,6 +1,6 @@
 {
   "name": "shaid-pylon",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "Livio",
   "bugs": {
     "url": "https://github.com/smartdevicelink/sdl_shaid_pylon.git"
@@ -17,9 +17,9 @@
   ],
   "description": "API gateway for SHAID microservices.",
   "engines": {
-    "node": "~6.2.0"
+    "node": "6.9.1"
   },
-  "homepage": "smartdevicelink.com",
+  "homepage": "https://smartdevicelink.com/en/docs/shaid",
   "keywords": [
     "API",
     "GATEWAY",
@@ -32,7 +32,10 @@
     "SERVER",
     "SERVICE",
     "SHAID",
+    "SHAID-DUMPSTER",
+    "SHAID-MAIDS",
     "SHAID-PYLON",
+    "SHAID-SUP",
     "SmartDeviceLink"
   ],
   "license": "BSD-3-Clause",
@@ -47,33 +50,33 @@
     "test-travis": "NODE_ENV=test-travis istanbul cover -x '**_test.js' -x '**/test.js' ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec"
   },
   "dependencies": {
-    "async": "^2.0.0-rc.6",
-    "body-parser": "^1.15.2",
-    "bunyan": "^1.8.1",
+    "async": "2.1.2",
+    "backoff": "2.5.0",
+    "body-parser": "1.15.2",
+    "bunyan": "1.8.4",
     "bunyan-dynamo": "0.0.5",
-    "bunyan-pretty-stream": "^1.0.1",
-    "compression": "^1.6.2",
-    "config": "^1.21.0",
-    "cors": "^2.7.1",
+    "bunyan-pretty-stream": "1.0.1",
+    "compression": "1.6.2",
+    "config": "1.24.0",
+    "cors": "2.8.1",
     "cramit": "0.0.3",
-    "express": "^4.13.3",
-    "express-session": "^1.13.0",
-    "express-useragent": "^0.2.4",
-    "i18next": "^3.3.1",
-    "i18next-express-middleware": "^1.0.1",
-    "i18next-node-fs-backend": "^0.1.2",
-    "i18next-sprintf-postprocessor": "^0.2.2",
-    "lodash": "^4.13.1",
-    "riposte": "0.0.9",
-    "seneca": "^2.1.0"
+    "express": "4.14.0",
+    "express-session": "1.14.2",
+    "express-useragent": "1.0.4",
+    "i18next": "3.4.4",
+    "i18next-express-middleware": "1.0.2",
+    "i18next-node-fs-backend": "0.1.3",
+    "i18next-sprintf-postprocessor": "0.2.2",
+    "lodash": "4.16.6",
+    "remie": "0.1.5",
+    "riposte": "0.1.3",
+    "seneca": "3.2.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.11.4",
-    "babel-preset-es2015": "^6.9.0",
-    "codecov.io": "^0.1.6",
-    "istanbul": "^0.4.4",
-    "mocha": "^2.5.3",
-    "should": "^10.0.0",
-    "supertest": "^1.2.0"
+    "codecov.io": "0.1.6",
+    "istanbul": "0.4.5",
+    "mocha": "3.1.2",
+    "should": "^11.1.1",
+    "supertest": "2.0.1"
   }
 }

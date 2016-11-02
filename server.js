@@ -11,6 +11,8 @@ const async = require('async'),
   fs = require('fs'),
   os = require('os'),
   path = require('path'),
+  Remie = require('remie'),
+  Riposte = require('riposte'),
   util = require('util');
 
 // Path to the node.js application files. (e.g. api endpoints)
@@ -22,9 +24,8 @@ const applicationPath = path.resolve("./app"),
  * ******************** Local Modules
  * ************************************************** */
 
-const RichErrorLibrary = require(path.resolve('./libs/richError/')),
-  Log = require(path.resolve('./libs/log')),
-  ResponseHandler = require(path.resolve('./libs/response'));
+const Log = require(path.resolve('./libs/log')),
+  Sdl = require(path.resolve('./libs/sdl'));
 
 
 /* ************************************************** *
@@ -62,6 +63,7 @@ class Server {
     // Create a new logger instance.
     this.log = (new Log()).createLogger(config.get('log'));
 
+    // Add the Package.json information to the server instance.
     this.npmConfig = npmConfig;
 
     return this;
@@ -80,12 +82,13 @@ class Server {
       tasks = [];
 
     tasks.push(createClassAsyncMethod(self, "initI18next"));
+    tasks.push(createClassAsyncMethod(self, "initRemie"));
     tasks.push(createClassAsyncMethod(self, "initDynamoDB"));
+    tasks.push(createClassAsyncMethod(self, "initRiposte"));
     tasks.push(createClassAsyncMethod(self, "initExpress"));
     tasks.push(createClassAsyncMethod(self, "initSeneca"));
     tasks.push(createClassAsyncMethod(self, "initApplication"));
     //tasks.push(createClassAsyncMethod(self, "loadStaticData"));
-    //tasks.push(createClassAsyncMethod(self, "setResponseHandlers"));
     tasks.push(createClassAsyncMethod(self, "startExpressServer"));
 
     async.series(tasks, function(err) {
@@ -118,29 +121,38 @@ class Server {
 
   // Load the application models and endpoints.
   initApplication (cb) {
-    let self = this;
+    let crave = require('crave'),
+      self = this;
+
     self.log.trace('Load application models and endpoints.');
 
     let craveCallback = function(err, files, results) {
       if(err) {
         cb(err);
       } else {
-        self.seneca.ready(function() {
-          for(var i = 0; i < results.length; i++) {
-            if(results[i] && results[i].onSenecaReady) {
-              results[i].onSenecaReady();
+        if(self.seneca) {
+          self.seneca.ready(function () {
+            for (var i = 0; i < results.length; i++) {
+              if (results[i] && results[i].onSenecaReady) {
+                results[i].onSenecaReady();
+              }
             }
-          }
-        });
+          });
+        }
 
-        self.app = self.riposte.addExpressPostMiddleware(self.app);
+        if(self.riposte) {
+          self.app = self.riposte.addExpressPostMiddleware(self.app);
+        }
 
         cb();
       }
     };
 
-    let crave = require('crave');
     crave.setConfig(config.get('crave'));
+
+    // Create a new SDL library instance
+    self.sdl = new Sdl(self);
+
     // Recursively load all files of the specified type(s) that are also located in the specified folder.
     crave.directory(path.resolve("./app"), ["api"], craveCallback, self);
   }
@@ -183,6 +195,19 @@ class Server {
     cb();
   }
 
+  // Must be called before initExpress
+  initRiposte(cb) {
+    let self = this;
+    self.log.trace("Initializing Riposte.");
+
+    self.riposte = new Riposte({
+      log: self.log,
+      remie: self.remie
+    });
+
+    cb();
+  }
+
   initExpress(cb) {
     let self = this;
     self.log.trace('Initializing express.');
@@ -190,15 +215,8 @@ class Server {
     let compress = require('compression'),
       express = require('express'),
       bodyParser = require('body-parser'),
-      riposte = new (require('riposte')),
       session = require('express-session'),
       userAgent = require('express-useragent');
-
-    riposte.set({
-      'i18next': self.i18next,
-      'log': self.log,
-      //'richError': self.RichError
-    });
 
     // Create an express application object.
     let app = express();
@@ -223,8 +241,10 @@ class Server {
     // Parse bodies with json, "Content-Type: application/json"
     app.use(bodyParser.json());
 
-    // Create a new response handler instance.
-    riposte.addExpressPreMiddleware(app);
+    // If using riposte, add the express pre middleware.
+    if(self.riposte) {
+      app = self.riposte.addExpressPreMiddleware(app);
+    }
 
     // Allow Cross-Origin Resource Sharing.
     if(config.has('server.allowCors') && config.get('server.allowCors')) {
@@ -253,23 +273,7 @@ class Server {
 
           app.use(middleware);
           app.use(webpackHotMiddleware(compiler));
-        } 
-
-        // Log all requests when trace level logging is enabled.
-        /*if(config.has('log.logAllRequests') && config.get('log.logAllRequests') === true) {
-          app.all('/*', function(req, res, next) {
-            switch(req.method) {
-              case "POST":
-              case "PUT":
-                self.log.trace(req.method+' '+req.protocol+'://'+req.get('host')+req.originalUrl+'\n\nHeaders: %s\n\nBody: %s', JSON.stringify(req.headers, undefined, 2), JSON.stringify(req.body, undefined, 2));
-                break;
-              default:
-                self.log.trace(req.method+' '+req.protocol+'://'+req.get('host')+req.originalUrl);
-                break;
-            }
-            next();
-          });
-        }*/
+        }
 
         // Configure i18n with express.
         if(config.has('i18n')) {
@@ -284,7 +288,6 @@ class Server {
         // Add the image folder as a static path.
         app.use('/img', express.static(path.join(__dirname + '/client/src/img'), config.get('express.static')));
 
-        self.riposte = riposte;
         self.app = app;
         cb();
       }
@@ -316,11 +319,26 @@ class Server {
       });
 
       self.i18next = i18next;
-      self.RichError = RichErrorLibrary({ i18next: i18next });
     } else {
-      self.RichError = RichErrorLibrary();
       cb();
     }
+  }
+
+  // If using i18next, must be run after initI18next.
+  initRemie(cb) {
+    let self = this;
+    self.log.trace('Initializing Remie.');
+
+    self.remie = new Remie({
+      defaultSanitizeOptions: {
+        error:{
+          stack: true
+        }
+      },
+      i18next: self.i18next
+    });
+
+    cb();
   }
 
   initSeneca(cb) {

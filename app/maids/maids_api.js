@@ -4,8 +4,8 @@ module.exports = function(server) {
     config = server.config,
     express = require('express'),
     log = server.log,
-    request = require('request'),
-    seneca = server.seneca;
+    seneca = server.seneca,
+    sdl = server.sdl;
 
   const METHODS = {
     create: "create",
@@ -17,9 +17,6 @@ module.exports = function(server) {
     health: "health"
   };
 
-  const SMARTDEVICELINK_BASE_URL = config.get('smartdevicelink.baseUrl'),
-    SMARTDEVICELINK_PROFILE_URL = SMARTDEVICELINK_BASE_URL + config.get('smartdevicelink.profileUrl');
-  
   const API_TOKEN_MAIDS = process.env.API_TOKEN_MAIDS || config.get('apiTokens.maids');
 
 
@@ -54,35 +51,20 @@ module.exports = function(server) {
   }
 
   function validateAccessToken(req, res, next) {
-    let access_token = req.headers['authorization'] || req.query.access_token;
+    let accessToken = req.headers['authorization'] || req.query.access_token;
 
-    if( ! access_token) {
-      res.reply.setUnauthorized(next);
+    if( ! accessToken) {
+      res.reply.sendUnauthorized(res, next);
     } else {
-      let options = {
-        "headers": {
-          "Authorization": "token "+access_token
-        },
-        "method": "GET",
-        "url": SMARTDEVICELINK_PROFILE_URL
-      };
-      request(options, function(err, response, body) {
+      sdl.getUserProfile(accessToken, function(err, userProfile) {
         if(err) {
-          log.error("[%s] Error using %s with access token %s.\nError: %s", res.reply.id, options.url, access_token, err);
-          res.reply.addErrors(err, next);
-        } else if( ! body){
-          log.error("[%s] Error using %s with access token %s: No body returned", res.reply.id, options.url, access_token);
-          res.reply.addErrors(new Error("Error in request to "+options.url), next);
+          log.error("[%s] Error using %s with access token %s.\nError: %s", res.reply.id, options.url, accessToken, err);
+          res.reply.addErrorsAndSend(err, res, next);
+        } else if( ! userProfile || ! userProfile.id ) {
+          res.reply.sendUnauthorized(res, next);
         } else {
-          body = JSON.parse(body);
-          log.trace("[%s] Response from %s using token %s\nBody: %s", res.reply.id, options.url, access_token, JSON.stringify(body, undefined, 2));
-          if( ! body.id) {
-            res.reply.setUnauthorized(next);
-          } else {
-            body.id = "" + body.id;
-            req.user = body;
-            next();
-          }
+          req.user = userProfile;
+          next();
         }
       });
     }
@@ -92,7 +74,7 @@ module.exports = function(server) {
     if(MODELS[req.params.model] && METHODS[req.params.method]) {
       next();
     } else {
-      res.reply.setNotFound();
+      res.reply.sendNotFound(res, next);
     }
   }
 
@@ -127,7 +109,7 @@ module.exports = function(server) {
     log.trace("ACT PATTERN: %s", JSON.stringify(pattern, undefined, 2));
     seneca.act(pattern, function(err, response) {
       if(err) {
-        res.reply.setInternalServerError(next);
+        res.reply.sendInternalServerError(res, next);
       } else {
         res.reply.fromObject(response);
         next();
@@ -135,7 +117,7 @@ module.exports = function(server) {
     });
   }
 
-  
+
   /* ************************************************** *
    * ******************** MAIDS Class
    * ************************************************** */
