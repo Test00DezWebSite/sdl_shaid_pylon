@@ -19,3 +19,8 @@ deployment:
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push smartdevicelink/shaid-pylon
+      - git config --global user.email "$GIT_EMAIL"
+      - git config --global user.name "$GIT_NAME"
+      - curl -O https://raw.githubusercontent.com/livio/scripts/master/docker/compose-update.sh
+      - chmod +x compose-update.sh
+      - ./compose-update.sh $CIRCLE_TAG smartdevicelink sdl_shaid smartdevicelink/shaid-pylon "Bumped shaid-pylon version $CIRCLE_TAG" docker-compose.yml ./scripts/deploy-to-ecs.staging.sh
