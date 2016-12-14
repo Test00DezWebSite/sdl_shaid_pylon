@@ -4,6 +4,7 @@ module.exports = function(server) {
     config = server.config,
     express = require('express'),
     log = server.log,
+    npmConfig = server.npmConfig,
     RichError = server.RichError,
     seneca = server.seneca,
     _ = require('lodash');
@@ -16,7 +17,10 @@ module.exports = function(server) {
 
   api.route('/').get(sendHealth);
 
-  app.use('/health/:version', api);
+  api.route('/version').get(sendAppVersion);
+
+  app.use('/api/:version/health', api);
+
 
   /* ************************************************** *
    * ******************** Route Methods
@@ -27,6 +31,10 @@ module.exports = function(server) {
    */
   function sendHealth(req, res, next) {
     res.sendStatus(200);
+  }
+
+  function sendAppVersion(req, res, next) {
+    res.send(npmConfig.version);
   }
 
   class Health {

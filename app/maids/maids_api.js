@@ -9,7 +9,9 @@ module.exports = function(server) {
 
   const METHODS = {
     create: "create",
-    register: "register"
+    status: "status",
+    register: "register",
+    version: "version"
   };
 
   const MODELS = {
@@ -26,7 +28,8 @@ module.exports = function(server) {
 
   var api = express.Router();
 
-  api.route('/health').get(setParams({ model: 'health', method: 'find' }), validateRequest,  sendCmd);
+  api.route('/health').get(setParams({ model: 'health', method: 'status' }), validateRequest, validateAccessToken, sendCmd);
+  api.route('/health/version').get(setParams({ model: 'health', method: 'version' }), validateRequest, validateAccessToken,  sendCmd);
   api.route('/:model').post(setParams({ method: 'create'}), validateRequest, validateAccessToken, sendCmd);
   api.route('/:model/:method').all(validateRequest, validateAccessToken, sendCmd);
 

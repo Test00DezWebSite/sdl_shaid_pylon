@@ -17,7 +17,7 @@ const async = require('async'),
 
 // Path to the node.js application files. (e.g. api endpoints)
 const applicationPath = path.resolve("./app"),
-  npmConfig = path.resolve("./package.json");
+  npmConfig = require(path.resolve("./package.json"));
 
 
 /* ************************************************** *
@@ -127,6 +127,7 @@ class Server {
     self.log.trace('Load application models and endpoints.');
 
     let craveCallback = function(err, files, results) {
+      console.log(results);
       if(err) {
         cb(err);
       } else {

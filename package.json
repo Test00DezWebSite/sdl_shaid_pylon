@@ -1,6 +1,6 @@
 {
   "name": "shaid-pylon",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "Livio",
   "bugs": {
     "url": "https://github.com/smartdevicelink/sdl_shaid_pylon.git"
@@ -17,7 +17,7 @@
   ],
   "description": "API gateway for SHAID microservices.",
   "engines": {
-    "node": "6.9.1"
+    "node": "6.9.2"
   },
   "homepage": "https://smartdevicelink.com/en/docs/shaid",
   "keywords": [
@@ -45,6 +45,12 @@
     "url": "https://github.com/smartdevicelink/sdl_shaid_pylon.git"
   },
   "scripts": {
+    "docker:bash": "docker run -it -e NODE_ENV=development --entrypoint /bin/bash shaid-pylon",
+    "docker:build": "docker build -t shaid-pylon .",
+    "docker:logs": "docker logs `docker ps | grep shaid-pylon | awk '{print $1;}'`",
+    "docker:publish": "image=$(cat package.json | grep version | head -1 | awk -F: '{print$2}' | sed 's/[\",]//g' | tr -d '[[:space:]]' ) && docker tag shaid-pylon:latest 454288067564.dkr.ecr.us-east-1.amazonaws.com/shaid-pylon:$image && docker push 454288067564.dkr.ecr.us-east-1.amazonaws.com/shaid-pylon:$image",
+    "docker:start": "docker run -e NODE_ENV=development -p 3000:3000 -d shaid-pylon",
+    "docker:stop": "docker stop `docker ps | grep shaid-pylon | awk '{print $1;}'`",
     "start": "NODE_ENV=development node index.js",
     "test": "NODE_ENV=test mocha",
     "test-travis": "NODE_ENV=test-travis istanbul cover -x '**_test.js' -x '**/test.js' ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec"
