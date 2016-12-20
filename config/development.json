@@ -1,6 +1,6 @@
 {
   "server" : {                      // Settings for the Node server.
-    "domainName": "localhost",      // Domain name used to reach the server.  (e.g. my.website.com)
+    "domainName": "172.19.0.2",      // Domain name used to reach the server.  (e.g. my.website.com)
     "port": 3000,                   // Port the server will be listening on.
     "protocol": "http"              // Protocol used to reach the server. (e.g. http or https)
   }

@@ -1,0 +1,44 @@
+{
+  "crave" : {                       // Crave is a module used to find and require files dynamically.  https://github.com/ssmereka/crave
+    "cache": {                      // Configure caching of the list of files to require.
+      "enable": false               // When true, the list of files to load is cached.  In production this should be enabled.
+    }
+  },
+
+  "express" : {                     // Configure the express routing framework.  http://expressjs.com/
+    "static": {                     // Default configurations for express.static
+      "maxAge": "86400000"          // 1 Day.  Set the max-age property of the Cache-Control header in milliseconds or a string in ms format.  Default is value is 0 and max is 365 days.  In production this needs to be greater than zero to leverage browser caching.
+    }
+  },
+
+  "log" : {                         // Configure the log module.
+    "consoleLogLevel": "info",      // Set the bunyan log level, see https://goo.gl/zNyG1C
+    "databaseLogLevel": false,      // Set the database log level.  Logging to a database is disabled when this is undefined or false
+    "bunyan-dynamo": {              // Configurations for the bunyan-dynamo module, see https://goo.gl/BqIS1t
+      "aws": {                      // Configurations for the AWS SDK used in bunyan-dynamo.  https://github.com/aws/aws-sdk-js
+        "profile": "default",       // Local settings and security profile to use, default value is "default".
+        "region": "us-east-1"       // Region to connect to, default value is "us-east-1".
+      },
+      "type": "dynamodb"            // Type of database to store logs in.  Only current option is DynamoDB.
+    },
+    "logAllRequests": true,         // Enable trace logging of all requests the server receives.
+    "logAllResponses": true         // Enable trace logging of all responses the server sends.
+  },
+
+  "richError": {                    // Configure the RichError library.
+    "enableStackTrace": false       // When true, errors returned from the server will include a stack trace.
+  },
+
+  "server" : {                      // Settings for the Node server.
+    "AllowCors": false,             // When true, allow Cross-Origin Resource Sharing (CORS).
+    "domainName": "localhost",      // Domain name used to reach the server.  (e.g. my.website.com)
+    "name": "shaid-pylon",          // Name of the server.
+    "port": 4000,                   // Port the server will be listening on.
+    "protocol": "http"              // Protocol used to reach the server. (e.g. http or https)
+    //"url": "http://localhost:3000 // Full URL used to reach the server.  If undefined, it will be created using the domainName, protocol, and port.
+  },
+
+  "smartdevicelink": {
+    "baseUrl": "https://smartdevicelink.com"
+  }
+}
