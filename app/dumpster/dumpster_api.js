@@ -29,11 +29,13 @@ module.exports = function(server) {
 
   var api = express.Router();
 
-  api.route('/health').get(setParams({ model: 'health', method: 'status' }), validateRequest, validateAccessToken, sendCmd);
-  api.route('/health/version').get(setParams({ model: 'health', method: 'version' }), validateRequest, validateAccessToken,  sendCmd);
+  //api.route('/health').get(setParams({ model: 'health', method: 'status' }), validateRequest, validateAccessToken, sendCmd);
+ // api.route('/health/version').get(setParams({ model: 'health', method: 'version' }), validateRequest, validateAccessToken,  sendCmd);
+  //api.route('/:model/:appId').get(setParams({ method: 'findById' }), validateRequest, validateAccessToken, sendCmd);
+  api.route('/:model/findById/:id').all(setParams({ method: 'findById'}), validateRequest, validateAccessToken, sendCmd);
   api.route('/:model').post(setParams({ method: 'upsert'}), validateRequest, validateAccessToken, sendCmd);
   api.route('/:model/:method').all(validateRequest, validateAccessToken, sendCmd);
-
+  
   app.use('/dumpster/:version', api);
 
 
@@ -110,6 +112,24 @@ module.exports = function(server) {
       }
     }
 
+    for(var key in req.params) {
+      if(req.params.hasOwnProperty(key)) {
+        switch(key) {
+          case "id":
+            if(pattern.model == "app") {
+              pattern.appId = req.params[key];
+            } else if(pattern.model == "token") {
+              pattern.tokenId = req.params[key];
+            } else {
+              pattern[key] = req.params[key];
+            }
+            break;
+          default:
+            break;
+        }
+      }
+    }
+
     log.trace("ACT PATTERN: %s", JSON.stringify(pattern, undefined, 2));
     seneca.act(pattern, function(err, response) {
       if(err) {
@@ -133,7 +153,7 @@ module.exports = function(server) {
 
     onSenecaReady() {
       let senecaDumpsterClientConfig = config.get('senecaClients.dumpster');
-      console.log("Senecia Dumpster client config:\n%s",JSON.stringify(senecaDumpsterClientConfig, undefined, 2))
+      log.trace("Seneca Dumpster client config:\n%s",JSON.stringify(senecaDumpsterClientConfig, undefined, 2))
       seneca.client(senecaDumpsterClientConfig);
     }
   }

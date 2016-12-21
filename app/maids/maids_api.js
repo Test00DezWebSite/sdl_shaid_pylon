@@ -132,7 +132,7 @@ module.exports = function(server) {
 
     onSenecaReady() {
       let senecaMaidsClientConfig = config.get('senecaClients.maids');
-      console.log("Senecia MAIDS client config:\n%s",JSON.stringify(senecaMaidsClientConfig, undefined, 2))
+      log.trace("Seneca MAIDS client config:\n%s",JSON.stringify(senecaMaidsClientConfig, undefined, 2))
       seneca.client(senecaMaidsClientConfig);
     }
   }
