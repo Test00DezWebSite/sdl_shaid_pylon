@@ -1,5 +1,6 @@
 {
   "apiTokens": {
+    "dumpster": "development-only-token",
     "maids": "development-only-token"
   },
 

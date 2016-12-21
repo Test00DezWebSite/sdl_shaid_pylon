@@ -1,7 +1,24 @@
 {
   "server" : {                      // Settings for the Node server.
-    "domainName": "172.19.0.2",      // Domain name used to reach the server.  (e.g. my.website.com)
+    "domainName": "localhost",      // Domain name used to reach the server.  (e.g. my.website.com)
     "port": 3000,                   // Port the server will be listening on.
     "protocol": "http"              // Protocol used to reach the server. (e.g. http or https)
+  },
+
+  "senecaClients": {
+    "dumpster": {
+      "host": "localhost",
+      "pin": "service:dumpster",
+      "port": 5003,
+      "timeout": 10000,
+      "type": "http"
+    },
+    "maids": {
+      "host": "localhost",
+      "pin": "service:maids",
+      "port": 5002,
+      "timeout": 10000,
+      "type": "http"
+    }
   }
 }

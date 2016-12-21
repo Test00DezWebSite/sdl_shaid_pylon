@@ -8,18 +8,19 @@ module.exports = function(server) {
     sdl = server.sdl;
 
   const METHODS = {
-    create: "create",
+    findById: "findById",
     status: "status",
-    register: "register",
+    upsert: "upsert",
     version: "version"
   };
 
   const MODELS = {
-    appids: "appids",
+    app: "app",
+    token: "token",
     health: "health"
   };
 
-  const API_TOKEN_MAIDS = process.env.API_TOKEN_MAIDS || config.get('apiTokens.maids');
+  const API_TOKEN_DUMPSTER = process.env.API_TOKEN_DUMPSTER || config.get('apiTokens.dumpster');
 
 
   /* ************************************************** *
@@ -30,10 +31,10 @@ module.exports = function(server) {
 
   api.route('/health').get(setParams({ model: 'health', method: 'status' }), validateRequest, validateAccessToken, sendCmd);
   api.route('/health/version').get(setParams({ model: 'health', method: 'version' }), validateRequest, validateAccessToken,  sendCmd);
-  api.route('/:model').post(setParams({ method: 'create'}), validateRequest, validateAccessToken, sendCmd);
+  api.route('/:model').post(setParams({ method: 'upsert'}), validateRequest, validateAccessToken, sendCmd);
   api.route('/:model/:method').all(validateRequest, validateAccessToken, sendCmd);
 
-  app.use('/maids/:version', api);
+  app.use('/dumpster/:version', api);
 
 
   /* ************************************************** *
@@ -83,11 +84,11 @@ module.exports = function(server) {
 
   function sendCmd(req, res, next) {
     let pattern = {
-      access_token: API_TOKEN_MAIDS,
+      access_token: API_TOKEN_DUMPSTER,
       id: res.reply.id,
       method: METHODS[req.params.method],
       model: MODELS[req.params.model],
-      service: "maids",
+      service: "dumpster",
       user: req.user,
       version: req.params.version
     };
@@ -122,20 +123,20 @@ module.exports = function(server) {
 
 
   /* ************************************************** *
-   * ******************** MAIDS Class
+   * ******************** Dumpster Class
    * ************************************************** */
 
-  class Maids {
+  class Dumpster {
     constructor() {
 
     }
 
     onSenecaReady() {
-      let senecaMaidsClientConfig = config.get('senecaClients.maids');
-      console.log("Senecia MAIDS client config:\n%s",JSON.stringify(senecaMaidsClientConfig, undefined, 2))
-      seneca.client(senecaMaidsClientConfig);
+      let senecaDumpsterClientConfig = config.get('senecaClients.dumpster');
+      console.log("Senecia Dumpster client config:\n%s",JSON.stringify(senecaDumpsterClientConfig, undefined, 2))
+      seneca.client(senecaDumpsterClientConfig);
     }
   }
 
-  return new Maids();
+  return new Dumpster();
 };
